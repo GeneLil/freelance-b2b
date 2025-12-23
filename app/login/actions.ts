@@ -3,7 +3,6 @@
 import { createClient } from "@/utils/supabase/server"
 import { redirect } from "next/navigation"
 import { LoginSchema, LoginFormValues } from "./schema"
-import { cookies } from "next/headers"
 import { revalidatePath } from "next/cache"
 
 export async function loginAction(values: LoginFormValues) {
@@ -13,8 +12,7 @@ export async function loginAction(values: LoginFormValues) {
     return { error: "Validation error" }
   }
 
-  const cookieStore = await cookies()
-  const supabase = await createClient(cookieStore)
+  const supabase = await createClient()
 
   const { email, password } = validatedFields.data
 
@@ -31,8 +29,7 @@ export async function loginAction(values: LoginFormValues) {
 }
 
 export async function logoutAction() {
-  const cookieStore = await cookies()
-  const supabase = await createClient(cookieStore)
+  const supabase = await createClient()
 
   const { error } = await supabase.auth.signOut()
 
