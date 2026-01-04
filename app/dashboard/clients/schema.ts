@@ -1,9 +1,14 @@
 import { z } from "zod"
 
-export const ClientSchema = z.object({
-  name: z.string().min(2, "Client name must be at least 2 characters long."),
-  email: z.email("Wrong email format."),
-  currency: z.string("Must be a valid currency code."),
+const ClientBaseSchema = z.object({
+  name: z.string().min(1, "Client name is required"),
+  email: z.email("Invalid email format."),
+  currency: z.enum(["USD", "EUR"]),
+  status: z.enum(["active", "archived"]).default("active"),
 })
 
-export type ClientFormValues = z.infer<typeof ClientSchema>
+export const CreateClientSchema = ClientBaseSchema
+export const UpdateClientSchema = ClientBaseSchema.extend({ id: z.uuid() })
+
+export type CreateClientFormValues = z.infer<typeof CreateClientSchema>
+export type UpdateClientFormValues = z.infer<typeof UpdateClientSchema>

@@ -3,6 +3,8 @@
 import Link from "next/link"
 import { createClientAction } from "@/app/dashboard/clients/actions"
 import { useState, type FormEvent } from "react"
+import type { Currency } from "@/app/types/shared"
+import type { Status } from "@/app/dashboard/clients/types"
 
 export default function NewClientPage() {
   const [error, setError] = useState<string | null>(null)
@@ -16,9 +18,15 @@ export default function NewClientPage() {
     const formData = new FormData(e.currentTarget)
     const name = formData.get("name") as string
     const email = formData.get("email") as string
-    const currency = formData.get("currency") as string
+    const currency = formData.get("currency") as Currency
+    const status = "active" as Status
 
-    const result = await createClientAction({ email, name, currency })
+    const result = await createClientAction({
+      email,
+      name,
+      status,
+      currency,
+    })
 
     if (result?.error) {
       setError(result.error)
@@ -69,6 +77,7 @@ export default function NewClientPage() {
               type="email"
               name="email"
               id="email"
+              required
               placeholder="client@example.com"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
             />

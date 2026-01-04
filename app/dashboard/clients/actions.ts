@@ -1,43 +1,72 @@
 "use server"
 
-import { createClient } from "@/utils/supabase/server"
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { getRequiredUser } from "@/utils/supabase/get-user"
 import {
-  type ClientFormValues,
-  ClientSchema,
-} from "@/app/dashboard/clients/schema"
+  CreateClientSchema,
+  CreateClientFormValues,
+  UpdateClientFormValues,
+  UpdateClientSchema,
+} from "./schema"
+import { createClient } from "@/utils/supabase/server"
 
-export async function createClientAction(formData: ClientFormValues) {
-  const user = await getRequiredUser()
+export async function createClientAction(formData: CreateClientFormValues) {
+  const supabase = await createClient()
 
-  if (!user) {
-    return { error: "Not authorized" }
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser()
+
+  if (!user || authError) {
+    throw new Error("Unauthorized")
   }
 
-  const validatedFields = ClientSchema.safeParse(formData)
+  const validatedFields = CreateClientSchema.safeParse(formData)
 
   if (!validatedFields.success) {
     return { error: "Validation error" }
   }
 
-  const { name, email, currency } = validatedFields.data
+  const { name, email, currency, status } = validatedFields.data
 
   if (!name) {
     return { error: "Client's name is required" }
   }
 
-  const supabase = await createClient()
-
-  console.log(user)
-  const { error } = await supabase
-    .from("clients")
-    .insert([{ name, email, currency, user_id: user.id }])
+  const { error } = await supabase.from("clients").insert({
+    user_id: user.id,
+    name,
+    email,
+    currency,
+    status,
+  })
 
   if (error) {
-    return { error: error.message }
+    throw new Error("Failed to create client")
   }
+
+  revalidatePath("/dashboard/clients")
+  redirect("/dashboard/clients")
+}
+
+export async function updateClientAction(formData: UpdateClientFormValues) {
+  const supabase = await createClient()
+
+  const validatedFields = UpdateClientSchema.safeParse(formData)
+
+  if (!validatedFields.success) {
+    return { error: "Validation error" }
+  }
+
+  const { name, email, currency, status, id } = validatedFields.data
+
+  const { error } = await supabase
+    .from("clients")
+    .update({ name, status, email, currency })
+    .eq("id", id)
+
+  if (error) return { error: error.message }
 
   revalidatePath("/dashboard/clients")
   redirect("/dashboard/clients")
