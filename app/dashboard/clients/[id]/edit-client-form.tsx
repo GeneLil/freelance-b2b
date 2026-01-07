@@ -5,6 +5,8 @@ import { updateClientAction } from "@/app/dashboard/clients/actions"
 import type { Tables } from "@/app/types/supabase"
 import type { Currency } from "@/app/types/shared"
 import type { Status } from "@/app/dashboard/clients/types"
+import { Button } from "@/app/components/ui/Button"
+import Link from "next/link"
 
 export default function EditClientForm({
   client,
@@ -101,14 +103,16 @@ export default function EditClientForm({
           <option value="archived">Archived</option>
         </select>
       </div>
-      <div className="pt-4">
-        <button
-          disabled={loading}
-          type="submit"
-          className="w-full bg-black text-white font-medium py-2.5 rounded-lg hover:bg-gray-800 disabled:opacity-50"
-        >
+      <div className="pt-4 flex gap-3">
+        <Button disabled={loading} type="submit" className="w-1/2">
           {loading ? "Saving..." : "Update Client"}
-        </button>
+        </Button>
+        <Link
+          href="/dashboard/clients"
+          className="flex-1 bg-gray-100 text-center w-1/2 text-gray-700 font-medium py-2.5 rounded-lg hover:bg-gray-200 transition"
+        >
+          Cancel
+        </Link>
       </div>
       {error && <p className="text-sm text-red-500">{error}</p>}
     </form>

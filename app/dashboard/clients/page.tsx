@@ -1,8 +1,15 @@
 import { getClients } from "./queries"
 import Link from "next/link"
+import ClientFilters from "./client-filters"
 
-export default async function ClientsPage() {
-  const clients = await getClients()
+export default async function ClientsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>
+}) {
+  const searchParamsResolved = await searchParams
+  const statusFilter = searchParamsResolved.status || "all"
+  const clients = await getClients(statusFilter)
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -11,6 +18,7 @@ export default async function ClientsPage() {
           <h1 className="text-2xl font-bold tracking-tight">Clients</h1>
           <p className="text-sm text-gray-500">Manage your clients</p>
         </div>
+        <ClientFilters />
         <Link
           href="/dashboard/clients/new"
           className="px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition"

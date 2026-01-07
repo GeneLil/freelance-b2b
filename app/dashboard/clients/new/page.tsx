@@ -5,6 +5,7 @@ import { createClientAction } from "@/app/dashboard/clients/actions"
 import { useState, type FormEvent } from "react"
 import type { Currency } from "@/app/types/shared"
 import type { Status } from "@/app/dashboard/clients/types"
+import { Button } from "@/app/components/ui/Button"
 
 export default function NewClientPage() {
   const [error, setError] = useState<string | null>(null)
@@ -102,16 +103,12 @@ export default function NewClientPage() {
           </div>
 
           <div className="pt-4 flex gap-3">
-            <button
-              disabled={loading}
-              type="submit"
-              className="cursor-pointer flex-1 bg-black text-white font-medium py-2.5 rounded-lg hover:bg-gray-800 transition shadow-sm"
-            >
+            <Button disabled={loading} type="submit" className="w-1/2">
               Create Client
-            </button>
+            </Button>
             <Link
               href="/dashboard/clients"
-              className="flex-1 bg-gray-100 text-center text-gray-700 font-medium py-2.5 rounded-lg hover:bg-gray-200 transition"
+              className="flex-1 bg-gray-100 text-center w-1/2 text-gray-700 font-medium py-2.5 rounded-lg hover:bg-gray-200 transition"
             >
               Cancel
             </Link>

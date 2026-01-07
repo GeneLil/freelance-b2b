@@ -71,3 +71,16 @@ export async function updateClientAction(formData: UpdateClientFormValues) {
   revalidatePath("/dashboard/clients")
   redirect("/dashboard/clients")
 }
+
+export async function deleteClientAction(id: string) {
+  const supabase = await createClient()
+
+  const { error } = await supabase.from("clients").delete().eq("id", id)
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  revalidatePath("/dashboard/clients")
+  redirect("/dashboard/clients")
+}

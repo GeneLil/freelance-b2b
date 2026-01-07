@@ -2,6 +2,7 @@ import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
 import EditClientForm from "./edit-client-form"
 import Link from "next/link"
+import DangerZone from "./danger-zone"
 
 export default async function EditClientPage({
   params,
@@ -35,6 +36,7 @@ export default async function EditClientPage({
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
         <h1 className="text-2xl font-bold mb-6">Edit Client: {client.name}</h1>
         <EditClientForm client={client} />
+        <DangerZone clientId={client.id} clientName={client.name} />
       </div>
     </div>
   )
