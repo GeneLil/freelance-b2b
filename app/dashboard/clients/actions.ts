@@ -19,7 +19,7 @@ export async function createClientAction(formData: CreateClientFormValues) {
   } = await supabase.auth.getUser()
 
   if (!user || authError) {
-    throw new Error("Unauthorized")
+    return { error: "Unauthorized" }
   }
 
   const validatedFields = CreateClientSchema.safeParse(formData)
@@ -43,7 +43,12 @@ export async function createClientAction(formData: CreateClientFormValues) {
   })
 
   if (error) {
-    throw new Error("Failed to create client")
+    if (error.code === "23505") {
+      return { error: "Client with this email already exists" }
+    }
+
+    console.error(error)
+    return { error: "Failed to create client. Please try again." }
   }
 
   revalidatePath("/dashboard/clients")

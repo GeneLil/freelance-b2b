@@ -1,15 +1,30 @@
 import { getClients } from "./queries"
 import Link from "next/link"
+import Pagination from "./pagination"
 import ClientFilters from "./client-filters"
 
 export default async function ClientsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string }>
+  searchParams: Promise<{
+    status?: string
+    search?: string
+    currency?: string
+    page?: string
+    limit?: string
+  }>
 }) {
-  const searchParamsResolved = await searchParams
-  const statusFilter = searchParamsResolved.status || "all"
-  const clients = await getClients(statusFilter)
+  const resolvedParams = await searchParams
+  const page = Number(resolvedParams.page) || 1
+  const limit = Number(resolvedParams.limit) || 10
+
+  const { clients, totalCount } = await getClients({
+    status: resolvedParams.status || "all",
+    search: resolvedParams.search,
+    currency: resolvedParams.currency,
+    page,
+    limit,
+  })
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -18,7 +33,6 @@ export default async function ClientsPage({
           <h1 className="text-2xl font-bold tracking-tight">Clients</h1>
           <p className="text-sm text-gray-500">Manage your clients</p>
         </div>
-        <ClientFilters />
         <Link
           href="/dashboard/clients/new"
           className="px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition"
@@ -26,6 +40,8 @@ export default async function ClientsPage({
           + Add Client
         </Link>
       </div>
+
+      <ClientFilters />
 
       <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
         {clients.length === 0 ? (
@@ -155,6 +171,7 @@ export default async function ClientsPage({
             </tbody>
           </table>
         )}
+        <Pagination totalCount={totalCount} />
       </div>
     </div>
   )
