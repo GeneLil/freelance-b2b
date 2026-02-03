@@ -3,7 +3,6 @@ import { z } from "zod"
 const ClientBaseSchema = z.object({
   name: z.string().min(1, "Client name is required"),
   email: z.email("Invalid email format."),
-  currency: z.enum(["USD", "EUR"]),
   status: z.enum(["active", "archived"]).default("active"),
 })
 

@@ -1,18 +1,13 @@
 import { createClient } from "@/utils/supabase/server"
-import { Tables } from "@/app/types/supabase"
 
-export type Client = Tables<"clients">
-
-export async function getClients({
+export async function getPaginatedClients({
   status,
   search,
-  currency,
   page = 1,
   limit = 10,
 }: {
   status: string
   search?: string
-  currency?: string
   page?: number
   limit?: number
 }) {
@@ -29,7 +24,6 @@ export async function getClients({
 
   if (status && status !== "all") query = query.eq("status", status)
   if (search) query = query.ilike("name", `%${search}%`)
-  if (currency && currency !== "all") query = query.eq("currency", currency)
 
   const { data, error, count } = await query
 
@@ -39,4 +33,21 @@ export async function getClients({
     clients: data || [],
     totalCount: count || 0,
   }
+}
+
+export async function getAllActiveClients() {
+  const supabase = await createClient()
+
+  const { data, error } = await supabase
+    .from("clients")
+    .select("id, name")
+    .eq("status", "active")
+    .order("name", { ascending: true })
+
+  if (error) {
+    console.error("Error fetching clients list:", error)
+    return []
+  }
+
+  return data
 }

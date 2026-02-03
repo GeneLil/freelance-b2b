@@ -10,7 +10,6 @@ export default function ClientFilters() {
 
   const currentStatus = searchParams.get("status") || "all"
   const currentSearch = searchParams.get("search") || ""
-  const currentCurrency = searchParams.get("currency") || "all"
 
   const updateFilters = (updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -50,16 +49,6 @@ export default function ClientFilters() {
           </div>
         )}
       </div>
-
-      <select
-        value={currentCurrency}
-        onChange={(e) => updateFilters({ currency: e.target.value })}
-        className="px-3 py-2 text-sm border border-gray-200 rounded-lg bg-white outline-none focus:ring-2 focus:ring-black"
-      >
-        <option value="all">All Currencies</option>
-        <option value="USD">USD ($)</option>
-        <option value="EUR">EUR (€)</option>
-      </select>
 
       <div className="flex bg-gray-100 p-1 rounded-lg">
         {tabs.map((tab) => (

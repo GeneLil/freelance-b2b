@@ -170,6 +170,7 @@ export type Database = {
           name: string
           payment_terms: number | null
           status: string | null
+          user_id: string
         }
         Insert: {
           archived_at?: string | null
@@ -183,6 +184,7 @@ export type Database = {
           name: string
           payment_terms?: number | null
           status?: string | null
+          user_id: string
         }
         Update: {
           archived_at?: string | null
@@ -196,6 +198,7 @@ export type Database = {
           name?: string
           payment_terms?: number | null
           status?: string | null
+          user_id?: string
         }
         Relationships: [
           {
@@ -300,7 +303,31 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      search_projects: {
+        Args: {
+          page_limit?: number
+          page_offset?: number
+          search_term?: string
+          status_filter?: string
+          type_filter?: string
+        }
+        Returns: {
+          archived_at: string
+          billing_type: string
+          client_id: string
+          client_name: string
+          created_at: string
+          currency: string
+          fixed_price: number
+          hourly_rate: number
+          id: string
+          name: string
+          payment_terms: number
+          status: string
+          total_count: number
+          user_id: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never

@@ -3,7 +3,6 @@
 import { type FormEvent, useState } from "react"
 import { updateClientAction } from "@/app/dashboard/clients/actions"
 import type { Tables } from "@/app/types/supabase"
-import type { Currency } from "@/app/types/shared"
 import type { Status } from "@/app/dashboard/clients/types"
 import { Button } from "@/app/components/ui/Button"
 import Link from "next/link"
@@ -24,7 +23,6 @@ export default function EditClientForm({
     const formData = new FormData(e.currentTarget)
     const name = formData.get("name") as string
     const email = formData.get("email") as string
-    const currency = formData.get("currency") as Currency
     const status = formData.get("status") as Status
 
     const result = await updateClientAction({
@@ -32,7 +30,6 @@ export default function EditClientForm({
       email,
       name,
       status,
-      currency,
     })
 
     if (result?.error) {
@@ -72,23 +69,6 @@ export default function EditClientForm({
           placeholder="client@example.com"
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition"
         />
-      </div>
-      <div>
-        <label
-          htmlFor="currency"
-          className="block text-sm font-medium text-gray-700 mb-1"
-        >
-          Default Currency
-        </label>
-        <select
-          name="currency"
-          id="currency"
-          defaultValue={client.currency || "USD"}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent outline-none transition bg-white"
-        >
-          <option value="USD">USD ($)</option>
-          <option value="EUR">EUR (€)</option>
-        </select>
       </div>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1">

@@ -28,7 +28,7 @@ export async function createClientAction(formData: CreateClientFormValues) {
     return { error: "Validation error" }
   }
 
-  const { name, email, currency, status } = validatedFields.data
+  const { name, email, status } = validatedFields.data
 
   if (!name) {
     return { error: "Client's name is required" }
@@ -38,7 +38,6 @@ export async function createClientAction(formData: CreateClientFormValues) {
     user_id: user.id,
     name,
     email,
-    currency,
     status,
   })
 
@@ -64,11 +63,11 @@ export async function updateClientAction(formData: UpdateClientFormValues) {
     return { error: "Validation error" }
   }
 
-  const { name, email, currency, status, id } = validatedFields.data
+  const { name, email, status, id } = validatedFields.data
 
   const { error } = await supabase
     .from("clients")
-    .update({ name, status, email, currency })
+    .update({ name, status, email })
     .eq("id", id)
 
   if (error) return { error: error.message }

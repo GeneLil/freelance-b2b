@@ -1,4 +1,4 @@
-import { getClients } from "./queries"
+import { getPaginatedClients } from "./queries"
 import Link from "next/link"
 import Pagination from "./pagination"
 import ClientFilters from "./client-filters"
@@ -9,7 +9,6 @@ export default async function ClientsPage({
   searchParams: Promise<{
     status?: string
     search?: string
-    currency?: string
     page?: string
     limit?: string
   }>
@@ -18,10 +17,9 @@ export default async function ClientsPage({
   const page = Number(resolvedParams.page) || 1
   const limit = Number(resolvedParams.limit) || 10
 
-  const { clients, totalCount } = await getClients({
+  const { clients, totalCount } = await getPaginatedClients({
     status: resolvedParams.status || "all",
     search: resolvedParams.search,
-    currency: resolvedParams.currency,
     page,
     limit,
   })
@@ -93,12 +91,6 @@ export default async function ClientsPage({
                   scope="col"
                   className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                 >
-                  Currency
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
                   Added on
                 </th>
                 <th
@@ -132,11 +124,6 @@ export default async function ClientsPage({
                     <div className="text-sm text-gray-500">
                       {client.email || "—"}
                     </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
-                      {client.currency}
-                    </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
