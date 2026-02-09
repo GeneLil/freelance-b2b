@@ -51,3 +51,15 @@ export async function getAllActiveClients() {
 
   return data
 }
+
+export async function getClientProjects(clientId: string) {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("projects")
+    .select("*")
+    .eq("client_id", clientId)
+    .order("created_at", { ascending: false })
+
+  if (error) throw error
+  return data || []
+}

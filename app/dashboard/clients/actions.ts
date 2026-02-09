@@ -9,6 +9,7 @@ import {
   UpdateClientSchema,
 } from "./schema"
 import { createClient } from "@/utils/supabase/server"
+import { getClientProjects } from "./queries"
 
 export async function createClientAction(formData: CreateClientFormValues) {
   const supabase = await createClient()
@@ -87,4 +88,8 @@ export async function deleteClientAction(id: string) {
 
   revalidatePath("/dashboard/clients")
   redirect("/dashboard/clients")
+}
+
+export async function fetchClientProjects(clientId: string) {
+  return await getClientProjects(clientId)
 }
