@@ -1,42 +1,36 @@
-import { createClient } from "@/utils/supabase/server"
 import { notFound } from "next/navigation"
-import EditClientForm from "./edit-client-form"
-import Link from "next/link"
-import DangerZone from "./danger-zone"
+import { getClientFullProfile } from "./queries" // Твоя новая функция
+import ClientInfoCard from "./client-info-card"
+import ClientWorkArea from "./client-work-area"
 
-export default async function EditClientPage({
+export default async function ClientDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>
 }) {
-  const supabase = await createClient()
-
   const { id } = await params
-  const { data: client } = await supabase
-    .from("clients")
-    .select("*")
-    .eq("id", id)
-    .single()
 
-  if (!client) {
-    notFound()
+  const data = await getClientFullProfile(id)
+
+  if (!data || !data.client) {
+    return notFound()
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="mb-6">
-        <Link
-          href="/dashboard/clients"
-          className="text-sm text-gray-500 hover:text-black"
-        >
-          &larr; Back to Clients
-        </Link>
-      </div>
-
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
-        <h1 className="text-2xl font-bold mb-6">Edit Client: {client.name}</h1>
-        <EditClientForm client={client} />
-        <DangerZone clientId={client.id} clientName={client.name} />
+    <div className="max-w-7xl mx-auto p-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="lg:col-span-1 sticky top-6">
+          <ClientInfoCard client={data.client} />
+        </div>
+        <div className="lg:col-span-2 space-y-8">
+          <ClientWorkArea
+            projects={data.projects}
+            invoices={data.invoices}
+            history={data.history}
+            financials={data.financials}
+            client={data.client}
+          />
+        </div>
       </div>
     </div>
   )

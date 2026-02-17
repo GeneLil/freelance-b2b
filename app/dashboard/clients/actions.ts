@@ -26,19 +26,21 @@ export async function createClientAction(formData: CreateClientFormValues) {
   const validatedFields = CreateClientSchema.safeParse(formData)
 
   if (!validatedFields.success) {
-    return { error: "Validation error" }
+    console.error("Validation error:", validatedFields.error)
+    return { error: "Please fill in all required fields correctly." }
   }
 
-  const { name, email, status } = validatedFields.data
-
-  if (!name) {
-    return { error: "Client's name is required" }
-  }
+  const { name, email, phone, address, vat_id, notes, status } =
+    validatedFields.data
 
   const { error } = await supabase.from("clients").insert({
     user_id: user.id,
     name,
     email,
+    phone: phone || null,
+    address: address || null,
+    vat_id: vat_id || null,
+    notes: notes || null,
     status,
   })
 
@@ -61,19 +63,33 @@ export async function updateClientAction(formData: UpdateClientFormValues) {
   const validatedFields = UpdateClientSchema.safeParse(formData)
 
   if (!validatedFields.success) {
-    return { error: "Validation error" }
+    console.error("Validation error:", validatedFields.error)
+    return { error: "Validation error. Check your input." }
   }
 
-  const { name, email, status, id } = validatedFields.data
+  const { id, name, email, phone, address, vat_id, notes, status } =
+    validatedFields.data
 
   const { error } = await supabase
     .from("clients")
-    .update({ name, status, email })
+    .update({
+      name,
+      email,
+      phone: phone || null,
+      address: address || null,
+      vat_id: vat_id || null,
+      notes: notes || null,
+      status,
+    })
     .eq("id", id)
 
-  if (error) return { error: error.message }
+  if (error) {
+    console.error("Update error:", error)
+    return { error: "Failed to update client." }
+  }
 
   revalidatePath("/dashboard/clients")
+  revalidatePath(`/dashboard/clients/${id}`)
   redirect("/dashboard/clients")
 }
 

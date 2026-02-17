@@ -39,8 +39,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      client_history: {
+        Row: {
+          client_id: string
+          created_at: string
+          description: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          description?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          description?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "client_history_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       clients: {
         Row: {
+          address: string | null
           archived_at: string | null
           created_at: string | null
           currency: string | null
@@ -48,10 +90,14 @@ export type Database = {
           id: string
           last_activity_at: string | null
           name: string
+          notes: string | null
+          phone: string | null
           status: string
           user_id: string
+          vat_id: string | null
         }
         Insert: {
+          address?: string | null
           archived_at?: string | null
           created_at?: string | null
           currency?: string | null
@@ -59,10 +105,14 @@ export type Database = {
           id?: string
           last_activity_at?: string | null
           name: string
+          notes?: string | null
+          phone?: string | null
           status?: string
           user_id: string
+          vat_id?: string | null
         }
         Update: {
+          address?: string | null
           archived_at?: string | null
           created_at?: string | null
           currency?: string | null
@@ -70,49 +120,68 @@ export type Database = {
           id?: string
           last_activity_at?: string | null
           name?: string
+          notes?: string | null
+          phone?: string | null
           status?: string
           user_id?: string
+          vat_id?: string | null
         }
         Relationships: []
       }
       invoices: {
         Row: {
           amount: number
-          billing_type: string
+          client_id: string
           created_at: string | null
-          currency: string
+          currency: string | null
           due_date: string | null
           id: string
+          invoice_number: string
+          issue_date: string | null
           paid_at: string | null
-          project_id: string
-          status: string
+          project_id: string | null
+          status: Database["public"]["Enums"]["invoice_status"]
+          updated_at: string | null
           user_id: string
         }
         Insert: {
-          amount: number
-          billing_type: string
+          amount?: number
+          client_id: string
           created_at?: string | null
-          currency: string
+          currency?: string | null
           due_date?: string | null
           id?: string
+          invoice_number: string
+          issue_date?: string | null
           paid_at?: string | null
-          project_id: string
-          status?: string
+          project_id?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          updated_at?: string | null
           user_id: string
         }
         Update: {
           amount?: number
-          billing_type?: string
+          client_id?: string
           created_at?: string | null
-          currency?: string
+          currency?: string | null
           due_date?: string | null
           id?: string
+          invoice_number?: string
+          issue_date?: string | null
           paid_at?: string | null
-          project_id?: string
-          status?: string
+          project_id?: string | null
+          status?: Database["public"]["Enums"]["invoice_status"]
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "invoices_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "invoices_project_id_fkey"
             columns: ["project_id"]
@@ -147,15 +216,7 @@ export type Database = {
           provider?: string | null
           provider_payment_id?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "payments_invoice_id_fkey"
-            columns: ["invoice_id"]
-            isOneToOne: false
-            referencedRelation: "invoices"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       projects: {
         Row: {
@@ -164,11 +225,10 @@ export type Database = {
           client_id: string
           created_at: string | null
           currency: string | null
-          fixed_price: number | null
-          hourly_rate: number | null
           id: string
           name: string
           payment_terms: number | null
+          rate: number | null
           status: string | null
           user_id: string
         }
@@ -178,11 +238,10 @@ export type Database = {
           client_id: string
           created_at?: string | null
           currency?: string | null
-          fixed_price?: number | null
-          hourly_rate?: number | null
           id?: string
           name: string
           payment_terms?: number | null
+          rate?: number | null
           status?: string | null
           user_id: string
         }
@@ -192,11 +251,10 @@ export type Database = {
           client_id?: string
           created_at?: string | null
           currency?: string | null
-          fixed_price?: number | null
-          hourly_rate?: number | null
           id?: string
           name?: string
           payment_terms?: number | null
+          rate?: number | null
           status?: string | null
           user_id?: string
         }
@@ -271,36 +329,7 @@ export type Database = {
       }
     }
     Views: {
-      client_outstanding_amount: {
-        Row: {
-          client_id: string | null
-          outstanding_amount: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "projects_client_id_fkey"
-            columns: ["client_id"]
-            isOneToOne: false
-            referencedRelation: "clients"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      project_outstanding_amount: {
-        Row: {
-          outstanding_amount: number | null
-          project_id: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "invoices_project_id_fkey"
-            columns: ["project_id"]
-            isOneToOne: false
-            referencedRelation: "projects"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Functions: {
       search_projects: {
@@ -330,7 +359,7 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      invoice_status: "draft" | "sent" | "paid" | "overdue" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -460,6 +489,8 @@ export const Constants = {
     Enums: {},
   },
   public: {
-    Enums: {},
+    Enums: {
+      invoice_status: ["draft", "sent", "paid", "overdue", "cancelled"],
+    },
   },
 } as const
