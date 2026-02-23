@@ -22,6 +22,8 @@ export default function ClientFilters() {
       }
     })
 
+    params.set("page", "1")
+
     startTransition(() => {
       router.push(`/dashboard/clients?${params.toString()}`)
     })

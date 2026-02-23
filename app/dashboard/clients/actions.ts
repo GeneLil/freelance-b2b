@@ -90,7 +90,7 @@ export async function updateClientAction(formData: UpdateClientFormValues) {
 
   revalidatePath("/dashboard/clients")
   revalidatePath(`/dashboard/clients/${id}`)
-  redirect("/dashboard/clients")
+  redirect(`/dashboard/clients/${id}`)
 }
 
 export async function deleteClientAction(id: string) {

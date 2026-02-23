@@ -10,7 +10,7 @@ export async function getPaginatedProjects({
   const supabase = await createClient()
   const from = (page - 1) * limit
 
-  const { data, error } = await supabase.rpc("search_projects", {
+  const { data, error } = await supabase.rpc("get_projects_list", {
     search_term: search,
     status_filter: status,
     type_filter: type,
@@ -25,11 +25,11 @@ export async function getPaginatedProjects({
     client_id: row.client_id,
     name: row.name,
     status: row.status,
-    hourly_rate: row.hourly_rate,
+    rate: row.rate,
     created_at: row.created_at,
     billing_type: row.billing_type,
-    fixed_price: row.fixed_price,
     currency: row.currency,
+    description: row.description,
     payment_terms: row.payment_terms,
     archived_at: row.archived_at,
     user_id: row.user_id,

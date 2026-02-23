@@ -178,7 +178,7 @@ export default function EditClientForm({ client }: { client: Client }) {
 
       <div className="pt-6 mt-8 border-t border-base-200 flex flex-col md:flex-row items-center md:justify-end gap-4">
         <Link
-          href="/dashboard/clients"
+          href={`/dashboard/clients/${client.id}`}
           className="btn btn-ghost w-full md:w-auto order-2 md:order-1 hover:bg-base-200/50"
         >
           Cancel

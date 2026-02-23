@@ -41,7 +41,7 @@ export default function DashboardLayout({
 
       <main className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <header className="h-16 border-b border-gray-200 bg-white flex items-center justify-end px-8 md:hidden"></header>
-        <div className="flex-1 overflow-y-auto p-4 sm:p-8">{children}</div>
+        <div className="flex-1 overflow-y-auto p-4">{children}</div>
       </main>
     </div>
   )

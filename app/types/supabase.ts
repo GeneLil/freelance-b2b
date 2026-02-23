@@ -84,7 +84,7 @@ export type Database = {
         Row: {
           address: string | null
           archived_at: string | null
-          created_at: string | null
+          created_at: string
           currency: string | null
           email: string
           id: string
@@ -99,7 +99,7 @@ export type Database = {
         Insert: {
           address?: string | null
           archived_at?: string | null
-          created_at?: string | null
+          created_at?: string
           currency?: string | null
           email: string
           id?: string
@@ -114,7 +114,7 @@ export type Database = {
         Update: {
           address?: string | null
           archived_at?: string | null
-          created_at?: string | null
+          created_at?: string
           currency?: string | null
           email?: string
           id?: string
@@ -225,6 +225,7 @@ export type Database = {
           client_id: string
           created_at: string | null
           currency: string | null
+          description: string | null
           id: string
           name: string
           payment_terms: number | null
@@ -238,6 +239,7 @@ export type Database = {
           client_id: string
           created_at?: string | null
           currency?: string | null
+          description?: string | null
           id?: string
           name: string
           payment_terms?: number | null
@@ -251,6 +253,7 @@ export type Database = {
           client_id?: string
           created_at?: string | null
           currency?: string | null
+          description?: string | null
           id?: string
           name?: string
           payment_terms?: number | null
@@ -332,13 +335,13 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      search_projects: {
+      get_projects_list: {
         Args: {
-          page_limit?: number
-          page_offset?: number
-          search_term?: string
-          status_filter?: string
-          type_filter?: string
+          page_limit: number
+          page_offset: number
+          search_term: string
+          status_filter: string
+          type_filter: string
         }
         Returns: {
           archived_at: string
@@ -347,11 +350,11 @@ export type Database = {
           client_name: string
           created_at: string
           currency: string
-          fixed_price: number
-          hourly_rate: number
+          description: string
           id: string
           name: string
           payment_terms: number
+          rate: number
           status: string
           total_count: number
           user_id: string

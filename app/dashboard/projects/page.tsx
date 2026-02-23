@@ -114,8 +114,8 @@ export default async function ProjectsPage({
                   <td className="px-6 py-4">
                     <div className="text-sm font-semibold text-gray-900">
                       {project.billing_type === "hourly"
-                        ? `${project.hourly_rate}/${project.currency === "USD" ? "hr" : "ч"}`
-                        : project.fixed_price}
+                        ? `${project.rate}/${project.currency === "USD" ? "hr" : "ч"}`
+                        : project.rate}
                       <span className="ml-1 text-gray-400 font-normal">
                         {project.currency}
                       </span>

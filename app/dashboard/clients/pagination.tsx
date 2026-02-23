@@ -25,8 +25,6 @@ export default function Pagination({ totalCount }: { totalCount: number }) {
     router.push(`?${params.toString()}`)
   }
 
-  if (totalPages <= 1 && limit === 10) return null
-
   return (
     <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-t border-gray-200">
       <div className="flex items-center gap-2">
