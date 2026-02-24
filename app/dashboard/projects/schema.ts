@@ -4,11 +4,11 @@ export const ProjectSchema = z.object({
   client_id: z.string().uuid("Please select a client"),
   name: z.string().min(2, "Project name is too short"),
   billing_type: z.enum(["hourly", "fixed"]),
-  hourly_rate: z.coerce.number().optional(),
-  fixed_price: z.coerce.number().optional(),
+  rate: z.coerce.number().optional(),
   currency: z.string().default("USD"),
   payment_terms: z.coerce.number().default(14),
   status: z.string().default("active"),
+  description: z.string().optional(),
 })
 
 export const CreateProjectSchema = ProjectSchema

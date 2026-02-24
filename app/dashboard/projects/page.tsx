@@ -1,8 +1,8 @@
 import { getPaginatedProjects } from "./queries"
 import Link from "next/link"
-import Pagination from "../clients/pagination" // используем готовый
+import Pagination from "@/app/dashboard/components/pagination" // Проверь правильность пути!
 import ProjectFilters from "./project-filters"
-import { Briefcase, Clock, DollarSign, ExternalLink } from "lucide-react"
+import ProjectListTable from "./projects-table"
 
 export default async function ProjectsPage({
   searchParams,
@@ -11,141 +11,65 @@ export default async function ProjectsPage({
     status?: string
     type?: string
     search?: string
+    sort?: string
+    order?: string
     page?: string
+    limit?: string
   }>
 }) {
   const resolvedParams = await searchParams
   const page = Number(resolvedParams.page) || 1
+  const limit = Number(resolvedParams.limit) || 10
+  const sort = resolvedParams.sort || "created_at"
+  const order = resolvedParams.order || "desc"
 
   const { projects, totalCount } = await getPaginatedProjects({
     status: resolvedParams.status || "all",
     type: resolvedParams.type || "all",
     search: resolvedParams.search || "",
+    sort,
+    order,
     page,
-    limit: 10,
+    limit,
   })
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="max-w-6xl mx-auto p-4">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-3xl font-extrabold tracking-tight text-base-content">
             Projects
           </h1>
-          <p className="text-sm text-gray-500">
-            Track your work and billing methods
+          <p className="text-sm text-base-content/60">
+            Track your active work and budgets
           </p>
         </div>
-        <Link
-          href="/dashboard/projects/new"
-          className="px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition shadow-sm"
-        >
+        <Link href="/dashboard/projects/new" className="btn btn-neutral">
           + Add Project
         </Link>
       </div>
 
       <ProjectFilters />
 
-      <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Project / Client
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Billing Type
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Rate
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                Status
-              </th>
-              <th className="relative px-6 py-3">
-                <span className="sr-only">Actions</span>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {projects.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={5}
-                  className="px-6 py-12 text-center text-gray-500"
-                >
-                  No projects found matching your criteria.
-                </td>
-              </tr>
-            ) : (
-              projects.map((project) => (
-                <tr
-                  key={project.id}
-                  className="hover:bg-gray-50 group transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center">
-                      <div className="h-10 w-10 rounded-lg bg-gray-100 flex items-center justify-center mr-4 text-gray-500 group-hover:bg-black group-hover:text-white transition-colors">
-                        <Briefcase size={20} />
-                      </div>
-                      <div>
-                        <div className="text-sm font-bold text-gray-900">
-                          {project.name}
-                        </div>
-                        <div className="text-xs text-gray-500">
-                          {project.clients?.name}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-1.5">
-                      {project.billing_type === "hourly" ? (
-                        <span className="flex items-center gap-1 text-xs font-medium text-blue-700 bg-blue-50 px-2 py-1 rounded-md">
-                          <Clock size={12} /> Hourly
-                        </span>
-                      ) : (
-                        <span className="flex items-center gap-1 text-xs font-medium text-purple-700 bg-purple-50 px-2 py-1 rounded-md">
-                          <DollarSign size={12} /> Fixed
-                        </span>
-                      )}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-semibold text-gray-900">
-                      {project.billing_type === "hourly"
-                        ? `${project.rate}/${project.currency === "USD" ? "hr" : "ч"}`
-                        : project.rate}
-                      <span className="ml-1 text-gray-400 font-normal">
-                        {project.currency}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        project.status === "active"
-                          ? "bg-green-100 text-green-700"
-                          : "bg-gray-100 text-gray-600"
-                      }`}
-                    >
-                      {project.status === "active" ? "Active" : "Archived"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <Link
-                      href={`/dashboard/projects/${project.id}/edit`}
-                      className="text-gray-400 hover:text-black transition-colors"
-                    >
-                      <ExternalLink size={18} />
-                    </Link>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-        <Pagination totalCount={totalCount} />
+      <div className="bg-base-100 border border-base-200 rounded-xl shadow-sm overflow-hidden flex flex-col max-h-[calc(100vh-220px)] min-h-[400px]">
+        <div className="flex-1 overflow-auto relative">
+          {projects.length === 0 ? (
+            <div className="p-12 text-center h-full flex flex-col items-center justify-center">
+              <h3 className="text-lg font-medium opacity-50 mb-2">
+                No projects found
+              </h3>
+              <p className="text-sm opacity-40">
+                Adjust your filters or create a new project.
+              </p>
+            </div>
+          ) : (
+            <ProjectListTable projects={projects} />
+          )}
+        </div>
+
+        <div className="border-t border-base-200 bg-base-50 shrink-0 z-20">
+          <Pagination totalCount={totalCount} />
+        </div>
       </div>
     </div>
   )

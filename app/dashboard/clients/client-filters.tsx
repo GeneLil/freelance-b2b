@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation"
 import { useTransition } from "react"
+import { Search } from "lucide-react"
+import { useDebouncedCallback } from "use-debounce"
 
 export default function ClientFilters() {
   const router = useRouter()
@@ -29,6 +31,10 @@ export default function ClientFilters() {
     })
   }
 
+  const handleSearch = useDebouncedCallback((term) => {
+    updateFilters({ search: term })
+  }, 300)
+
   const tabs = [
     { id: "all", label: "All" },
     { id: "active", label: "Active" },
@@ -37,30 +43,36 @@ export default function ClientFilters() {
 
   return (
     <div className="flex flex-wrap items-center gap-4 mb-6">
-      <div className="relative flex-1 min-w-50">
+      <div className="relative flex-1 min-w-[200px]">
+        <Search
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/40 z-10 pointer-events-none"
+          size={16}
+        />
+
         <input
           type="text"
           placeholder="Search by name..."
           defaultValue={currentSearch}
-          onChange={(e) => updateFilters({ search: e.target.value })}
-          className="w-full px-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-black outline-none transition"
+          onChange={(e) => handleSearch(e.target.value)}
+          className="input input-bordered w-full pl-10 h-10 min-h-[40px] focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
         />
+
         {isPending && (
-          <div className="absolute right-3 top-2.5">
-            <div className="w-4 h-4 border-2 border-gray-300 border-t-black rounded-full animate-spin"></div>
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <span className="loading loading-spinner loading-xs opacity-50"></span>
           </div>
         )}
       </div>
 
-      <div className="flex bg-gray-100 p-1 rounded-lg">
+      <div className="flex bg-base-200/50 p-1 rounded-lg">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => updateFilters({ status: tab.id })}
-            className={`px-4 py-1.5 cursor-pointer text-sm font-medium rounded-md transition-all ${
+            className={`px-4 py-1.5 text-xs cursor-pointer font-bold uppercase tracking-wider rounded-md transition-all ${
               currentStatus === tab.id
-                ? "bg-white text-black shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-base-100 text-base-content shadow-sm"
+                : "text-base-content/50 hover:text-base-content"
             }`}
           >
             {tab.label}

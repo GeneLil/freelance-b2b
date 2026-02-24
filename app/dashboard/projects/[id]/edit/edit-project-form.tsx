@@ -1,29 +1,30 @@
 "use client"
 
 import { useState } from "react"
-import { createProjectAction } from "../actions"
+import { updateProjectAction } from "@/app/dashboard/projects/actions"
 import { Save } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import type { Project, BillingType } from "@/app/types/shared"
 
-export default function NewProjectForm({
+export default function EditProjectForm({
+  project,
   clients,
-  defaultClientId,
 }: {
+  project: Project
   clients: { id: string; name: string }[]
-  defaultClientId?: string
 }) {
-  const [billingType, setBillingType] = useState<"hourly" | "fixed">("hourly")
+  const [billingType, setBillingType] = useState<BillingType>(
+    (project.billing_type as BillingType) || "hourly",
+  )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const router = useRouter()
 
-  const initialClient = clients.find((c) => c.id === defaultClientId)
+  const initialClient = clients.find((c) => c.id === project.client_id)
   const [clientSearchName, setClientSearchName] = useState(
     initialClient?.name || "",
   )
   const [selectedClientId, setSelectedClientId] = useState(
-    defaultClientId || "",
+    project.client_id || "",
   )
 
   const handleClientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,22 +49,20 @@ export default function NewProjectForm({
     setError(null)
     const formData = new FormData(e.currentTarget)
 
-    const result = await createProjectAction({
-      client_id: formData.get("client_id") as string, // Возьмется из скрытого инпута
+    const result = await updateProjectAction({
+      id: project.id,
+      client_id: formData.get("client_id") as string,
       name: formData.get("name") as string,
       description: formData.get("description") as string,
       billing_type: billingType,
       rate: Number(formData.get("rate")),
       currency: formData.get("currency") as string,
-      payment_terms: 14,
-      status: "active",
+      status: formData.get("status") as string,
     })
 
     if (result?.error) {
       setError(result.error)
       setLoading(false)
-    } else {
-      router.push("/dashboard/projects")
     }
   }
 
@@ -80,7 +79,7 @@ export default function NewProjectForm({
             </label>
 
             <input
-              list="clients-datalist"
+              list="clients-datalist-edit"
               value={clientSearchName}
               onChange={handleClientChange}
               placeholder="Type to search client..."
@@ -89,7 +88,7 @@ export default function NewProjectForm({
               }`}
               required
             />
-            <datalist id="clients-datalist">
+            <datalist id="clients-datalist-edit">
               {clients.map((c) => (
                 <option key={c.id} value={c.name} />
               ))}
@@ -109,10 +108,24 @@ export default function NewProjectForm({
             </label>
             <input
               name="name"
+              defaultValue={project.name}
               required
-              placeholder="e.g. Website Redesign"
               className="input input-bordered w-full focus:input-primary transition-all font-medium"
             />
+          </div>
+
+          <div className="form-control w-full md:col-span-2">
+            <label className="label">
+              <span className="label-text font-bold">Status</span>
+            </label>
+            <select
+              name="status"
+              defaultValue={project.status || "active"}
+              className="select select-bordered w-full focus:select-primary font-medium"
+            >
+              <option value="active">Active</option>
+              <option value="archived">Archived</option>
+            </select>
           </div>
         </div>
 
@@ -124,8 +137,8 @@ export default function NewProjectForm({
           </label>
           <textarea
             name="description"
+            defaultValue={project.description || ""}
             className="textarea textarea-bordered h-24 w-full focus:textarea-primary transition-all"
-            placeholder="Brief details about the project scope..."
           ></textarea>
         </div>
       </div>
@@ -179,8 +192,8 @@ export default function NewProjectForm({
               name="rate"
               type="number"
               step="0.01"
+              defaultValue={project.rate || ""}
               required
-              placeholder="0.00"
               className="input input-bordered w-full font-mono focus:input-primary"
             />
           </div>
@@ -191,8 +204,8 @@ export default function NewProjectForm({
             </label>
             <select
               name="currency"
-              defaultValue="USD"
-              className="select select-bordered w-full focus:select-primary"
+              defaultValue={project.currency || "USD"}
+              className="select select-bordered w-full focus:select-primary font-medium"
             >
               <option value="USD">USD ($)</option>
               <option value="EUR">EUR (€)</option>
@@ -228,7 +241,7 @@ export default function NewProjectForm({
           ) : (
             <Save size={18} />
           )}
-          Create Project
+          Update Project
         </button>
       </div>
     </form>

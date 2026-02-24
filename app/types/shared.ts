@@ -21,3 +21,4 @@ export type ClientFullProfile = {
 }
 
 export type ClientStatus = "active" | "archived"
+export type BillingType = "hourly" | "fixed"

@@ -3,70 +3,85 @@
 import { useRouter, useSearchParams } from "next/navigation"
 import { Search } from "lucide-react"
 import { useDebouncedCallback } from "use-debounce"
+import { useTransition } from "react"
 
 export default function ProjectFilters() {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
 
-  const updateParams = (key: string, value: string) => {
+  const currentStatus = searchParams.get("status") || "all"
+  const currentType = searchParams.get("type") || "all"
+  const currentSearch = searchParams.get("search") || ""
+
+  const updateParams = (updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString())
-    if (value === "all" || !value) {
-      params.delete(key)
-    } else {
-      params.set(key, value)
-    }
+
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === "all" || value === "") {
+        params.delete(key)
+      } else {
+        params.set(key, value)
+      }
+    })
+
     params.set("page", "1")
-    router.push(`/dashboard/projects?${params.toString()}`)
+
+    startTransition(() => {
+      router.push(`/dashboard/projects?${params.toString()}`)
+    })
   }
 
   const handleSearch = useDebouncedCallback((term) => {
-    updateParams("search", term)
+    updateParams({ search: term })
   }, 300)
 
   return (
-    <div className="space-y-4 mb-6">
-      <div className="flex flex-col md:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder="Search projects or clients..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-black"
-            defaultValue={searchParams.get("search")?.toString()}
-            onChange={(e) => handleSearch(e.target.value)}
-          />
-        </div>
-
-        {/* Фильтры-табы */}
-        <div className="flex bg-gray-100 p-1 rounded-lg w-fit">
-          {["all", "active", "archived"].map((s) => (
-            <button
-              key={s}
-              onClick={() => updateParams("status", s)}
-              className={`px-4 py-1.5 text-sm font-medium rounded-md transition-all ${
-                (searchParams.get("status") || "all") === s
-                  ? "bg-white text-black shadow-sm"
-                  : "text-gray-500 hover:text-gray-700"
-              }`}
-            >
-              {s.charAt(0).toUpperCase() + s.slice(1)}
-            </button>
-          ))}
-        </div>
-
-        <select
-          onChange={(e) => updateParams("type", e.target.value)}
-          value={searchParams.get("type") || "all"}
-          className="px-4 py-2 border border-gray-200 rounded-lg text-sm bg-white outline-none"
-        >
-          <option value="all">All Types</option>
-          <option value="hourly">Hourly Rate</option>
-          <option value="fixed">Fixed Price</option>
-        </select>
+    <div className="flex flex-wrap items-center gap-4 mb-6">
+      <div className="relative flex-1 min-w-[200px]">
+        <Search
+          className="absolute left-3 top-1/2 z-10 pointer-events-none -translate-y-1/2 text-base-content/40"
+          size={16}
+        />
+        <input
+          type="text"
+          placeholder="Search projects or clients..."
+          defaultValue={currentSearch}
+          onChange={(e) => handleSearch(e.target.value)}
+          className="input input-bordered w-full pl-10 h-10 min-h-[40px] focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm"
+        />
+        {isPending && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+            <span className="loading loading-spinner loading-xs opacity-50"></span>
+          </div>
+        )}
       </div>
+
+      <div className="flex bg-base-200/50 p-1 rounded-lg">
+        {["all", "active", "archived"].map((s) => (
+          <button
+            key={s}
+            onClick={() => updateParams({ status: s })}
+            className={`px-4 py-1.5 text-xs cursor-pointer font-bold uppercase tracking-wider rounded-md transition-all ${
+              currentStatus === s
+                ? "bg-base-100 text-base-content shadow-sm"
+                : "text-base-content/50 hover:text-base-content"
+            }`}
+          >
+            {s}
+          </button>
+        ))}
+      </div>
+
+      <select
+        onChange={(e) => updateParams({ type: e.target.value })}
+        value={currentType}
+        className="select select-bordered select-sm h-10 min-h-[40px] font-medium bg-base-100 focus:outline-none"
+      >
+        <option value="all">All Billing Types</option>
+        <option value="hourly">Hourly Rate</option>
+        <option value="fixed">Fixed Price</option>
+      </select>
     </div>
   )
 }

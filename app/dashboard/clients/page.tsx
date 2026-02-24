@@ -1,6 +1,6 @@
 import { getPaginatedClients } from "./queries"
 import Link from "next/link"
-import Pagination from "./pagination"
+import Pagination from "@/app/dashboard/components/pagination"
 import ClientFilters from "./client-filters"
 import ClientListTable from "./client-table"
 

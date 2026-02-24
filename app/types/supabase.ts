@@ -223,7 +223,7 @@ export type Database = {
           archived_at: string | null
           billing_type: string
           client_id: string
-          created_at: string | null
+          created_at: string
           currency: string | null
           description: string | null
           id: string
@@ -237,7 +237,7 @@ export type Database = {
           archived_at?: string | null
           billing_type?: string
           client_id: string
-          created_at?: string | null
+          created_at?: string
           currency?: string | null
           description?: string | null
           id?: string
@@ -251,7 +251,7 @@ export type Database = {
           archived_at?: string | null
           billing_type?: string
           client_id?: string
-          created_at?: string | null
+          created_at?: string
           currency?: string | null
           description?: string | null
           id?: string
